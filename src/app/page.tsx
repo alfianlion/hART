@@ -1,12 +1,13 @@
+import { TextField } from '@/components/TextField';
 import { prisma } from '@/lib/database';
 
 export default async function Home() {
-  const leaves = await prisma.leave.findMany();
+  const staffs = await prisma.staff.findMany();
 
   return (
-    <div>
-      {leaves.map(leave => (
-        <div>{leave.staffId}</div>
+    <div className='container mx-auto'>
+      {staffs.map(staff => (
+        <div>{staff.name}</div>
       ))}
     </div>
   );
