@@ -1,9 +1,27 @@
-'use client';
+import RemainingLeaves from '@/components/RemainingLeaves';
+import { prisma } from '@/lib/database';
+import ApplyLeaveForm from './ApplyLeaveForm';
+import { StaffType } from '@prisma/client';
 
-import React from 'react'
+export default async function ApplyLeavePage() {
+  const james = await prisma.staff.findFirstOrThrow({
+    where: {
+      name: {
+        contains: 'James',
+      },
+    },
+  });
 
-export default function CreateLeavePage() {
+  const reportingOfficers = await prisma.staff.findMany({
+    where: {
+      type: StaffType.RO
+    }
+  })
+
   return (
-    <div>CreateLeavePage</div>
-  )
+    <div>
+      <RemainingLeaves staffId={james.id} totalLeaves={james.leaves} />
+      <ApplyLeaveForm reportingOfficers={reportingOfficers} />
+    </div>
+  );
 }

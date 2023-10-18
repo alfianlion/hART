@@ -6,3 +6,11 @@ html,
 body {
   height: 100%;
 }
+
+.Dropdown-option {
+  @apply text-slate-700 bg-slate-100 hover:bg-slate-200 p-3 transition border-b border-slate-300
+}
+
+.Dropdown-option:nth-child(2) {
+  border-bottom: none;
+}
