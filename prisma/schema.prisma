@@ -13,13 +13,12 @@ enum StaffType {
 }
 
 model Staff {
-  id                 String              @id @default(cuid()) @map("_id")
-  name               String
-  email              String
-  type               StaffType           @default(INTERN)
-  leaves             Float
-  GVTStaff           GVTStaff?
-  emailVerified      DateTime?
+  id            String    @id @default(cuid()) @map("_id")
+  name          String
+  email         String
+  type          StaffType @default(INTERN)
+  leaves        Float?
+  GVTStaff      GVTStaff?
 }
 
 model GVTStaff {
@@ -27,7 +26,7 @@ model GVTStaff {
   name    String
   email   String
   leaves  Float
-  staff   Staff   @relation(fields: [staffId], references: [id])
+  staff   Staff  @relation(fields: [staffId], references: [id])
   staffId String @unique
 }
 
