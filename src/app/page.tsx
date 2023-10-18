@@ -1,5 +1,13 @@
-export default function Home() {
+import { prisma } from '@/lib/database';
+
+export default async function Home() {
+  const leaves = await prisma.leave.findMany();
+
   return (
-    <div>Hello world</div>
-  )
+    <div>
+      {leaves.map(leave => (
+        <div>{leave.staffId}</div>
+      ))}
+    </div>
+  );
 }
