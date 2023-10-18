@@ -51,10 +51,6 @@ export default function ApplyLeaveForm({
     },
   });
 
-  useEffect(() => {
-console.log(errors)
-  }, [errors])
-
   const onSubmit: SubmitHandler<ApplyLeaveSchemaType> = async data => {
     console.log(data);
   };
@@ -90,15 +86,17 @@ console.log(errors)
           setValue('leaveCategory', option.value as LeaveCategory);
         }}
       />
-            <Dropdown
+      <Dropdown
         options={[
           {
             label: 'Full day',
             value: LeaveType.FULL,
-          },{
+          },
+          {
             label: 'Half day (AM)',
             value: LeaveType.HALF_AM,
-          },{
+          },
+          {
             label: 'Half day (PM)',
             value: LeaveType.HALF_PM,
           },
@@ -110,11 +108,17 @@ console.log(errors)
       />
       <div className="flex flex-col gap-2">
         <label>Start Date</label>
-        <DatePicker onChange={date => setValue('startDate', date)} startDate={new Date()} />
+        <DatePicker
+          onChange={date => setValue('startDate', date)}
+          startDate={new Date()}
+        />
       </div>
       <div className="flex flex-col gap-2">
         <label>End Date</label>
-        <DatePicker onChange={date => setValue('endDate', date)} startDate={new Date()} />
+        <DatePicker
+          onChange={date => setValue('endDate', date)}
+          startDate={new Date()}
+        />
       </div>
       <TextField
         label="Leave Details"
