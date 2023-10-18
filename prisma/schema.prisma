@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum StaffType {
+  INTERN
+  RO
+}
+
+model Staff {
+  id       String    @id @default(cuid()) @map("_id")
+  name     String
+  email    String
+  type     StaffType
+  leaves   Float
+  GVTStaff GVTStaff?
+}
+
+model GVTStaff {
+  id      String @id @default(cuid()) @map("_id")
+  name    String
+  email   String
+  leaves  Float
+  staff   Staff  @relation(fields: [staffId], references: [id])
+  staffId String @unique
+}
+
+enum LeaveCategory {
+  GOVTECH
+  MOM
+}
+
+enum LeaveType {
+  FULL
+  HALF_PM
+  HALF_AM
+}
+
+enum LeaveStatus {
+  APPROVED
+  REJECTED
+  PENDING
+  CANCELLED
+}
+
+model Leave {
+  id               String        @id @default(cuid()) @map("_id")
+  staffId          String
+  roId             String
+  leaveCategory    LeaveCategory
+  leaveType        LeaveType
+  startDate        DateTime
+  endDate          DateTime
+  leaveDetails     String?
+  leaveStatus      LeaveStatus
+  rejectedDetails  String?
+  lastModifiedDate DateTime      @updatedAt
+}
