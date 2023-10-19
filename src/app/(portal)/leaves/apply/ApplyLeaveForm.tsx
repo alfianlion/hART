@@ -106,19 +106,21 @@ export default function ApplyLeaveForm({
           setValue('leaveType', option.value as LeaveType);
         }}
       />
-      <div className="flex flex-col gap-2">
-        <label>Start Date</label>
-        <DatePicker
-          onChange={date => setValue('startDate', date)}
-          startDate={new Date()}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <label>End Date</label>
-        <DatePicker
-          onChange={date => setValue('endDate', date)}
-          startDate={new Date()}
-        />
+      <div className="flex gap-2 w-full">
+        <div className="flex flex-col gap-2 flex-1">
+          <label>Start Date</label>
+          <DatePicker
+            onChange={date => setValue('startDate', date)}
+            startDate={new Date()}
+          />
+        </div>
+        <div className="flex flex-col gap-2 flex-1">
+          <label>End Date</label>
+          <DatePicker
+            onChange={date => setValue('endDate', date)}
+            startDate={new Date()}
+          />
+        </div>
       </div>
       <TextField
         label="Leave Details"
