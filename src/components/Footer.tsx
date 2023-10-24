@@ -15,7 +15,7 @@ const items = [
   },
   {
     person: 'Lucas',
-    github: 'https://github.com/alfianlion',
+    github: 'https://github.com/LucasH-HJH',
   },
   {
     person: 'Syahir',
