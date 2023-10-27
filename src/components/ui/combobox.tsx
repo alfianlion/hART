@@ -27,7 +27,7 @@ type ComboboxProps = {
   items: ComboboxItem[];
   label: string;
   error?: string | null;
-  onChange: (value: string) => void;
+  onChange: (value: string | null) => void;
   defaultValue?: string;
 };
 
@@ -43,8 +43,7 @@ export function Combobox({
   const [value, setValue] = React.useState(defaultValue);
 
   React.useEffect(() => {
-    if (!value) return;
-    onChange(value);
+    onChange(value ?? null);
   }, [value]);
 
   return (
@@ -59,7 +58,7 @@ export function Combobox({
             type="button"
             aria-expanded={open}
             className={cn(
-              'h-[58px] w-full justify-between cursor-pointer bg-slate-200/0 p-3 transition rounded-md outline-none text-slate-800 border-2 focus:bg-slate-200 border-blue-600',
+              'w-full justify-between cursor-pointer bg-slate-200/0 p-3 transition rounded-md outline-none text-slate-800 border-2 focus:bg-slate-200 border-blue-600',
               open && 'bg-slate-200',
               error && 'border-red-500'
             )}
@@ -76,7 +75,7 @@ export function Combobox({
         className="p-0 bg-slate-100"
         align="start"
         style={{
-          width: `${buttonRef.current?.clientWidth ?? 0 + 4}px`,
+          width: `${(buttonRef.current?.clientWidth ?? 0) + 4}px`,
         }}
       >
         <Command className="w-full">
@@ -87,7 +86,7 @@ export function Combobox({
               <CommandItem
                 key={item.value}
                 onSelect={() => {
-                  setValue(value == item.value ? '' : item.value);
+                  setValue(item.value);
                   setOpen(false);
                 }}
                 className="text-slate-700 bg-slate-100 hover:bg-slate-200 p-3 transition border-b border-slate-300 last:border-none cursor-pointer"

@@ -36,7 +36,7 @@ export function DatePicker({ onChange, startDate, isError }: DatePickerProps) {
           type="button"
           variant={'outline'}
           className={cn(
-            'justify-start text-left font-normal w-full p-3 h-[58px] border-2 border-blue-700',
+            'justify-start text-left font-normal w-full p-3 border-2 border-blue-700',
             !date && 'text-muted-foreground',
             isOpen && 'bg-slate-200',
             isError && 'border-red-500'

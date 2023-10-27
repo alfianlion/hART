@@ -14,19 +14,27 @@ minimumDate.setDate(minimumDate.getDate() - 1);
 
 const applyLeaveSchema = z
   .object({
-    reportingOfficer: z.string({
-      required_error: "Reporting Officer required!"
-    }).min(1),
+    reportingOfficer: z
+      .string({
+        required_error: 'Reporting Officer required!',
+      })
+      .min(1),
     leaveCategory: z.nativeEnum(LeaveCategory, {
-      required_error: "Leave Category required!"
+      required_error: 'Leave Category required!',
     }),
-    leaveType: z.nativeEnum(LeaveType),
-    startDate: z.date({
-      required_error: "Start Date required!"
-    }).min(minimumDate),
-    endDate: z.date({
-      required_error: "End Date required!"
-    }).min(minimumDate),
+    leaveType: z.nativeEnum(LeaveType, {
+      required_error: 'Leave Type required!',
+    }),
+    startDate: z
+      .date({
+        required_error: 'Start Date required!',
+      })
+      .min(minimumDate),
+    endDate: z
+      .date({
+        required_error: 'End Date required!',
+      })
+      .min(minimumDate),
     leaveDetails: z.string().max(1200).nullable(),
   })
   .refine(data => data.startDate <= data.endDate, {
@@ -50,6 +58,9 @@ export default function ApplyLeaveForm({
     formState: { errors, isSubmitting },
   } = useForm<ApplyLeaveSchemaType>({
     resolver: zodResolver(applyLeaveSchema),
+    defaultValues: {
+      leaveCategory: LeaveCategory.GOVTECH,
+    }
   });
 
   const currentDate = useMemo(() => new Date(), []);
@@ -61,7 +72,7 @@ export default function ApplyLeaveForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col max-w-3xl w-full bg-slate-100 shadow-lg p-3 mx-auto rounded-md mt-6 gap-3"
+      className="flex flex-col max-w-md w-full bg-slate-100 shadow-lg p-3 mx-auto rounded-md mt-6 gap-3"
     >
       <Combobox
         items={reportingOfficers.map(officer => ({
@@ -69,15 +80,13 @@ export default function ApplyLeaveForm({
           label: officer.name,
         }))}
         label="Reporting Officer"
-        error={
-          errors.reportingOfficer?.message
-        }
+        error={errors.reportingOfficer?.message}
         onChange={option => {
           if (!option) return;
           setValue('reportingOfficer', option);
         }}
       />
-      <Combobox
+      {/* <Combobox
         items={[
           {
             label: 'MOM',
@@ -93,7 +102,7 @@ export default function ApplyLeaveForm({
         onChange={option => {
           setValue('leaveCategory', option as LeaveCategory);
         }}
-      />
+      /> */}
       <Combobox
         items={[
           {
