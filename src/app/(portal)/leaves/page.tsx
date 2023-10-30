@@ -8,6 +8,10 @@ export default async function LeavesPage() {
   const authUser = await getAuthUser();
   const currentUser = staffs.find(staff => staff.id == authUser?.id)!;
 
+  const parsedStartDate = new Date(Date.parse('10 October 2023'));
+  const parsedEndDate = new Date(Date.parse('13 October 2023'));
+
+
   return (
     <div className="container mx-auto">
       <RemainingLeaves
@@ -18,16 +22,16 @@ export default async function LeavesPage() {
       <div className='flex flex-row flex-wrap space-x-6 w-screen'>
         <CardLeaves 
           leaveStatus='Approved'
-          startDate='10 October 2023'
-          endDate='13 October 2023'/>
+          startDate= {parsedStartDate}
+          endDate= {parsedEndDate}/>
           <CardLeaves 
           leaveStatus='Rejected'
-          startDate='10 October 2023'
-          endDate='13 October 2023'/>
+          startDate= {parsedStartDate}
+          endDate= {parsedEndDate}/>
           <CardLeaves 
           leaveStatus='Approved'
-          startDate='10 October 2023'
-          endDate='13 October 2023'/>
+          startDate= {parsedStartDate}
+          endDate= {parsedEndDate}/>
       </div>
       {staffs.map(staff => (
         <div>{staff.name}</div>
