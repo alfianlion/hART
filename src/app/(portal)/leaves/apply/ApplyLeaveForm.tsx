@@ -1,48 +1,17 @@
 'use client';
+
+import { saveLeave } from '@/actions/leave';
 import { Button } from '@/components/Button';
 import { TextField } from '@/components/TextField';
 import { Combobox } from '@/components/ui/combobox';
 import { DatePicker } from '@/components/ui/date-picker';
+import { ApplyLeaveSchema, ApplyLeaveSchemaType } from '@/schema/leaves';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LeaveCategory, LeaveType, Staff } from '@prisma/client';
+import { LeaveType, Staff } from '@prisma/client';
+import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-const minimumDate = new Date();
-minimumDate.setDate(minimumDate.getDate() - 1);
-
-const applyLeaveSchema = z
-  .object({
-    reportingOfficer: z
-      .string({
-        required_error: 'Reporting Officer required!',
-      })
-      .min(1),
-    leaveCategory: z.nativeEnum(LeaveCategory, {
-      required_error: 'Leave Category required!',
-    }),
-    leaveType: z.nativeEnum(LeaveType, {
-      required_error: 'Leave Type required!',
-    }),
-    startDate: z
-      .date({
-        required_error: 'Start Date required!',
-      })
-      .min(minimumDate),
-    endDate: z
-      .date({
-        required_error: 'End Date required!',
-      })
-      .min(minimumDate),
-    leaveDetails: z.string().max(1200).nullable(),
-  })
-  .refine(data => data.startDate <= data.endDate, {
-    message: 'End date cannot be before start date',
-    path: ['endDate'],
-  });
-
-type ApplyLeaveSchemaType = z.infer<typeof applyLeaveSchema>;
+import { toast } from 'react-toastify';
 
 type ApplyLeaveFormProps = {
   reportingOfficers: Staff[];
@@ -51,22 +20,27 @@ type ApplyLeaveFormProps = {
 export default function ApplyLeaveForm({
   reportingOfficers,
 }: ApplyLeaveFormProps) {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<ApplyLeaveSchemaType>({
-    resolver: zodResolver(applyLeaveSchema),
-    defaultValues: {
-      leaveCategory: LeaveCategory.GOVTECH,
-    }
+    resolver: zodResolver(ApplyLeaveSchema),
   });
 
   const currentDate = useMemo(() => new Date(), []);
 
   const onSubmit: SubmitHandler<ApplyLeaveSchemaType> = async data => {
-    console.log(data);
+    try {
+      await saveLeave(data);
+      toast.success('Leave applied successfully');
+      router.refresh();
+      router.push('/leaves');
+    } catch {
+      toast.error('Failed to apply leave');
+    }
   };
 
   return (
@@ -86,23 +60,6 @@ export default function ApplyLeaveForm({
           setValue('reportingOfficer', option);
         }}
       />
-      {/* <Combobox
-        items={[
-          {
-            label: 'MOM',
-            value: LeaveCategory.MOM,
-          },
-          {
-            label: 'GovTech',
-            value: LeaveCategory.GOVTECH,
-          },
-        ]}
-        defaultValue={LeaveCategory.GOVTECH}
-        label="Category of Leave"
-        onChange={option => {
-          setValue('leaveCategory', option as LeaveCategory);
-        }}
-      /> */}
       <Combobox
         items={[
           {

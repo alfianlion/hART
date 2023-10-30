@@ -13,13 +13,15 @@ enum StaffType {
 }
 
 model Staff {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
-  email    String    @unique
-  password String
-  type     StaffType @default(INTERN)
-  leaves   Float?
-  GVTStaff GVTStaff?
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  email          String    @unique
+  password       String
+  type           StaffType @default(INTERN)
+  leaves         Float?
+  GVTStaff       GVTStaff?
+  appliedLeaves  Leave[]   @relation("staff")
+  assignedLeaves Leave[]   @relation("ro")
 }
 
 model GVTStaff {
@@ -51,8 +53,8 @@ enum LeaveStatus {
 
 model Leave {
   id               String        @id @default(auto()) @map("_id") @db.ObjectId
-  staffId          String
-  roId             String
+  staffId          String        @db.ObjectId
+  roId             String        @db.ObjectId
   leaveCategory    LeaveCategory
   leaveType        LeaveType
   startDate        DateTime
@@ -61,4 +63,6 @@ model Leave {
   leaveStatus      LeaveStatus   @default(PENDING)
   rejectedDetails  String?
   lastModifiedDate DateTime      @updatedAt
+  staff            Staff         @relation("staff", fields: [staffId], references: [id])
+  ro               Staff         @relation("ro", fields: [roId], references: [id])
 }

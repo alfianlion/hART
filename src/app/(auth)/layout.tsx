@@ -1,5 +1,5 @@
 import { Navbar } from '@/components/Navbar';
-import { getAuthUser } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/auth';
 import React from 'react';
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
 };
 
 export default async function AuthLayout({ children }: Props) {
-  const user = await getAuthUser();
+  const user = await getCurrentUser();
 
   return (
     <>

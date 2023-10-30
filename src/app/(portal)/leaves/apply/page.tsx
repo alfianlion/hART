@@ -2,15 +2,12 @@ import RemainingLeaves from '@/components/RemainingLeaves';
 import { prisma } from '@/lib/database';
 import ApplyLeaveForm from './ApplyLeaveForm';
 import { StaffType } from '@prisma/client';
+import { getCurrentUser } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 export default async function ApplyLeavePage() {
-  const james = await prisma.staff.findFirstOrThrow({
-    where: {
-      name: {
-        contains: 'James',
-      },
-    },
-  });
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return redirect('/login');
 
   const reportingOfficers = await prisma.staff.findMany({
     where: {
@@ -20,7 +17,7 @@ export default async function ApplyLeavePage() {
 
   return (
     <div>
-      <RemainingLeaves staffId={james.id} totalLeaves={james.leaves} />
+      <RemainingLeaves staffId={currentUser.id} totalLeaves={currentUser.leaves ?? 0} />
       <ApplyLeaveForm reportingOfficers={reportingOfficers} />
     </div>
   );

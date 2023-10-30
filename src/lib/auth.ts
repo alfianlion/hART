@@ -2,7 +2,7 @@ import { NextAuthOptions, getServerSession } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from './database';
 import { compare } from 'bcrypt';
-import { Staff, StaffType } from '@prisma/client';
+import { StaffType } from '@prisma/client';
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -80,16 +80,13 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-export type AuthUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: StaffType;
-};
-
-export const getAuthUser = async () => {
-  const session = (await getServerSession(authOptions)) as {
-    user: AuthUser;
-  } | null;
-  return session?.user;
+export const getCurrentUser = async () => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) return null;
+  const user = await prisma.staff.findUnique({
+    where: {
+      email: session?.user?.email,
+    }
+  })
+  return user;
 };
