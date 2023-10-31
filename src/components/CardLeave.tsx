@@ -1,5 +1,5 @@
 import { Leave, LeaveStatus, LeaveType } from '@prisma/client';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { CalendarRangeIcon, ClipboardEdit, User2, XCircle } from 'lucide-react';
 import Link from 'next/link';
 
@@ -44,7 +44,7 @@ export default async function CardLeaves({ leave }: CardProps) {
   return (
     <Link
       href={`/leaves/${leave.id}`}
-      className={`relative shadow-md rounded-md p-3 flex gap-2 flex-col w-[calc(25%-24px)] min-w-[250px] bg-white h-fit`}
+      className={`relative shadow-md rounded-md pt-1 pb-3 px-3 flex gap-2 flex-col w-[calc(25%-24px)] min-w-[250px] bg-white`}
     >
       <div
         className={`font-bold rounded-tr-md rounded-bl-md absolute top-0 right-0 py-1 px-2 ${badgeColors[leaveStatus]}`}
@@ -54,7 +54,12 @@ export default async function CardLeaves({ leave }: CardProps) {
       <span className="font-bold text-lg">{leaveTypes[leaveType]}</span>
       <div className="flex items-center gap-2">
         <CalendarRangeIcon />
-        {format(startDate, 'dd/MM/yyyy')} - {format(endDate, 'dd/MM/yyyy')}
+        {leaveType === 'FULL' && !isSameDay(startDate, endDate)
+          ? `${format(startDate, 'dd/MM/yyyy')} - ${format(
+              endDate,
+              'dd/MM/yyyy'
+            )}`
+          : format(startDate, 'dd/MM/yyyy')}
       </div>
       <div className="flex items-center gap-2">
         <User2 />

@@ -9,28 +9,47 @@ import { ApplyLeaveSchema, ApplyLeaveSchemaType } from '@/schema/leaves';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LeaveType, Staff } from '@prisma/client';
 import { useRouter } from 'next/navigation';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
 type ApplyLeaveFormProps = {
   reportingOfficers: Staff[];
+  remainingLeaves: number;
 };
 
 export default function ApplyLeaveForm({
   reportingOfficers,
+  remainingLeaves,
 }: ApplyLeaveFormProps) {
   const router = useRouter();
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ApplyLeaveSchemaType>({
     resolver: zodResolver(ApplyLeaveSchema),
   });
 
+  const leaveType = watch('leaveType');
+  const startDate = watch('startDate');
   const currentDate = useMemo(() => new Date(), []);
+
+  useEffect(() => {
+    setValue('remainingLeaves', remainingLeaves);
+  }, [remainingLeaves]);
+
+  useEffect(() => {
+    if (leaveType === 'FULL') return;
+    console.log('setting');
+    setValue('endDate', startDate);
+  }, [startDate, leaveType]);
+
+  useEffect(() => {
+    console.log(errors);
+  }, [errors]);
 
   const onSubmit: SubmitHandler<ApplyLeaveSchemaType> = async data => {
     try {
@@ -49,6 +68,7 @@ export default function ApplyLeaveForm({
       className="flex flex-col max-w-md w-full bg-slate-100 shadow-lg p-3 mx-auto rounded-md mt-6 gap-3"
     >
       <Combobox
+        key="ro"
         items={reportingOfficers.map(officer => ({
           value: officer.id,
           label: officer.name,
@@ -61,6 +81,7 @@ export default function ApplyLeaveForm({
         }}
       />
       <Combobox
+        key="type"
         items={[
           {
             label: 'Full day',
@@ -75,7 +96,7 @@ export default function ApplyLeaveForm({
             value: LeaveType.HALF_PM,
           },
         ]}
-        defaultValue={LeaveType.HALF_PM}
+        defaultValue={LeaveType.FULL}
         label="Type of Leave"
         onChange={option => {
           setValue('leaveType', option as LeaveType);
@@ -83,7 +104,7 @@ export default function ApplyLeaveForm({
       />
       <div className="flex gap-2 w-full">
         <div className="flex flex-col gap-2 flex-1">
-          <label>Start Date</label>
+          <label>{leaveType === 'FULL' ? 'Start Date' : 'Date of Leave'}</label>
           <DatePicker
             onChange={date => setValue('startDate', date)}
             isError={!!errors.startDate}
@@ -95,17 +116,21 @@ export default function ApplyLeaveForm({
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-2 flex-1">
-          <label>End Date</label>
-          <DatePicker
-            onChange={date => setValue('endDate', date)}
-            isError={!!errors.endDate}
-            startDate={currentDate}
-          />
-          {errors.endDate?.message && (
-            <div className="text-red-500 text-sm">{errors.endDate.message}</div>
-          )}
-        </div>
+        {leaveType === 'FULL' && (
+          <div className={`flex flex-col gap-2 flex-1`}>
+            <label>End Date</label>
+            <DatePicker
+              onChange={date => setValue('endDate', date)}
+              isError={!!errors.endDate}
+              startDate={currentDate}
+            />
+            {errors.endDate?.message && (
+              <div className="text-red-500 text-sm">
+                {errors.endDate.message}
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <TextField
         label="Leave Details"

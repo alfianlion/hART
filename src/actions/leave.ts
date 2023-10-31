@@ -6,7 +6,7 @@ import { ApplyLeaveSchema, ApplyLeaveSchemaType } from '@/schema/leaves';
 import { Leave, LeaveCategory, LeaveType } from '@prisma/client';
 import { Resend } from 'resend';
 import ApproveLeaveEmail from '../../emails/ApproveLeaveEmail';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 
 const resend = new Resend(process.env['RESEND_API_KEY']);
 
@@ -50,28 +50,36 @@ const sendEmail = async (leave: Leave) => {
     throw new Error('Reporting Officer not found!');
   }
   try {
+    const duration =
+      leave.leaveType === 'FULL' && !isSameDay(leave.startDate, leave.endDate)
+        ? `${format(leave.startDate, 'dd MMM yyyy')} - ${format(
+            leave.endDate,
+            'dd MMM yyyy'
+          )}`
+        : format(leave.startDate, 'dd MMM yyyy');
+
+    const type = {
+      [LeaveType.FULL]: 'Full Day',
+      [LeaveType.HALF_AM]: 'Half Day (AM)',
+      [LeaveType.HALF_PM]: 'Half Day (PM)',
+    }[leave.leaveType];
+
     const data = await resend.emails.send({
       from: 'noreply <noreply@resend.dev>',
       to: [
         process.env['NODE_ENV'] === 'production'
           ? ro.email
           : 'nasrullah01n@gmail.com',
+        staff.email,
       ],
-      cc: [staff.email],
-      subject: 'Hello World',
+      subject: `Approve Leave Request by ${staff.name} (${type}) on ${duration}`,
       react: ApproveLeaveEmail({
-        duration: `${format(leave.startDate, 'dd MMM yyyy')} - ${format(
-          leave.endDate,
-          'dd MMM yyyy'
-        )}`,
+        duration: duration,
         leaveId: leave.id,
         roName: ro.name,
         staffName: staff.name,
-        type: {
-          [LeaveType.FULL]: 'Full Day',
-          [LeaveType.HALF_AM]: 'Half Day (AM)',
-          [LeaveType.HALF_PM]: 'Half Day (PM)',
-        }[leave.leaveType],
+        type: type,
+        description: leave.leaveDetails,
       }),
     });
     return data;

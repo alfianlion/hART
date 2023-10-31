@@ -10,6 +10,7 @@ type ApproveLeaveEmailProps = {
   staffName: string;
   duration: string;
   type: string;
+  description: string | null;
 };
 
 const ApproveLeaveEmail = ({
@@ -18,12 +19,13 @@ const ApproveLeaveEmail = ({
   staffName = 'Nas',
   duration = '10 October 2023 - 11 October 2023',
   type = 'Full Day',
+  description = null,
 }: ApproveLeaveEmailProps) => {
-  const baseUrl =
-    process.env['NODE_ENV'] === 'production' ? 'TODO' : 'http://localhost:3000';
+  const baseUrl = 'http://localhost:3000';
+  // process.env['NODE_ENV'] === 'production' ? 'TODO' : 'http://localhost:3000';
 
-  const approveLeaveLink = `${baseUrl}/leave/${leaveId}/approve`;
-  const rejectLeaveLink = `${baseUrl}/leave/${leaveId}/reject`;
+  const approveLeaveLink = `${baseUrl}/leaves/${leaveId}/approve`;
+  const rejectLeaveLink = `${baseUrl}/leaves/${leaveId}/reject`;
 
   return (
     <Html>
@@ -51,6 +53,16 @@ const ApproveLeaveEmail = ({
           <p>
             {staffName} has requested for a <b>{type}</b> leave on{' '}
             <b>{duration}</b>.
+          </p>
+          <p
+            style={{
+              fontStyle: description ? 'normal' : 'italic',
+              backgroundColor: "#F4F4F4",
+              padding: '1rem',
+              borderRadius: '4px'
+            }}
+          >
+            {description ?? 'No Details were provided'}
           </p>
           <p>Please click the button below to approve or reject the request.</p>
           <div

@@ -1,4 +1,5 @@
 import { LeaveType } from '@prisma/client';
+import { intervalToDuration } from 'date-fns';
 import { z } from 'zod';
 
 export const ApplyLeaveSchema = z
@@ -26,10 +27,29 @@ export const ApplyLeaveSchema = z
         message: 'End date cannot be before today',
       }),
     leaveDetails: z.string().max(1200).nullable(),
+    remainingLeaves: z.number().min(0),
   })
   .refine(data => data.startDate <= data.endDate, {
     message: 'End date cannot be before start date',
     path: ['endDate'],
-  });
+  })
+  .refine(
+    data => {
+      const daysOfLeave = intervalToDuration({
+        start: data.startDate,
+        end: data.endDate,
+      }).days;
+      if (daysOfLeave === undefined) return false;
+      console.log({
+        daysOfLeave,
+        remaining: data.remainingLeaves
+      });
+      return daysOfLeave <= data.remainingLeaves;
+    },
+    {
+      message: 'Insufficient number of leaves left',
+      path: ['endDate'],
+    }
+  );
 
 export type ApplyLeaveSchemaType = z.infer<typeof ApplyLeaveSchema>;
