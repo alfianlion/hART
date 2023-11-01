@@ -68,12 +68,12 @@ export default async function CardLeaves({ leave }: CardProps) {
       </div>
       <div className="flex items-start gap-2">
         <ClipboardEdit className="shrink-0" />
-        {leaveDetails || <i>No details Provided</i>}
+        {leaveDetails || <i>No details were provided</i>}
       </div>
       {leaveStatus === LeaveStatus.REJECTED && (
         <div className="flex items-start gap-2">
           <XCircle className="shrink-0" />
-          {rejectedDetails ?? 'No details were provided'}
+          {rejectedDetails ?? <i>No details were provided</i>}
         </div>
       )}
     </Link>
