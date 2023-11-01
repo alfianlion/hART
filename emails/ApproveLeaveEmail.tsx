@@ -1,7 +1,6 @@
 import { Html } from '@react-email/html';
 import { Head } from '@react-email/head';
 import { Body } from '@react-email/body';
-import { Preview } from '@react-email/preview';
 import { Button } from '@react-email/Button';
 
 type ApproveLeaveEmailProps = {
@@ -34,9 +33,6 @@ const ApproveLeaveEmail = ({
   return (
     <Html>
       <Head />
-      <Preview>
-        Approve Leave Request by {staffName} ({type}) on {duration}
-      </Preview>
       <Body
         style={{
           backgroundColor: '#ffffff',

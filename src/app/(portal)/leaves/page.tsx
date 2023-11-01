@@ -2,16 +2,28 @@ import RemainingLeaves from '@/components/RemainingLeaves';
 import CardLeaves from '@/components/CardLeave';
 import { getCurrentUser } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { LeaveStatus } from '@prisma/client';
 import { prisma } from '@/lib/database';
 
 export default async function LeavesPage() {
   const currentUser = await getCurrentUser();
   if (!currentUser) return redirect('/login');
 
+  const isIntern = currentUser.type === 'INTERN';
+
   const appliedLeaves = await prisma.leave.findMany({
     where: {
-      staffId: currentUser.id,
+      ...(isIntern
+        ? {
+            staffId: currentUser.id,
+          }
+        : {
+            roId: currentUser.id,
+          }),
+      ...(isIntern
+        ? {}
+        : {
+            leaveStatus: 'PENDING',
+          }),
     },
     include: {
       staff: true,
@@ -27,7 +39,7 @@ export default async function LeavesPage() {
       />
       <div className="flex flex-wrap gap-6 justify-center">
         {appliedLeaves.map(leave => (
-          <CardLeaves key={leave.id} leave={leave} />
+          <CardLeaves key={leave.id} leave={leave} isIntern={isIntern} />
         ))}
         {appliedLeaves.length === 0 && (
           <div className="text-center text-gray-500">
