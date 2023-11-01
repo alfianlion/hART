@@ -43,8 +43,8 @@ export function Combobox({
   const [value, setValue] = React.useState(defaultValue);
 
   React.useEffect(() => {
-    onChange(value ?? null);
-  }, [value]);
+    setValue(defaultValue)
+  }, [defaultValue])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -88,6 +88,7 @@ export function Combobox({
                 onSelect={() => {
                   setValue(item.value);
                   setOpen(false);
+                  onChange(item.value)
                 }}
                 className="text-slate-700 bg-slate-100 hover:bg-slate-200 p-3 transition border-b border-slate-300 last:border-none cursor-pointer"
               >

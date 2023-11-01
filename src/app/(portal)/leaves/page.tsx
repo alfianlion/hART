@@ -12,9 +12,6 @@ export default async function LeavesPage() {
   const appliedLeaves = await prisma.leave.findMany({
     where: {
       staffId: currentUser.id,
-      NOT: {
-        leaveStatus: LeaveStatus.CANCELLED,
-      },
     },
     include: {
       staff: true,

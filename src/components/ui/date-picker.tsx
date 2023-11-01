@@ -17,17 +17,22 @@ type DatePickerProps = {
   onChange: (date: Date) => void;
   startDate: Date;
   isError: boolean;
+  defaultValue?: Date;
 };
 
-export function DatePicker({ onChange, startDate, isError }: DatePickerProps) {
-  const [date, setDate] = React.useState<Date>();
+export function DatePicker({
+  onChange,
+  startDate,
+  isError,
+  defaultValue,
+}: DatePickerProps) {
+  const [date, setDate] = React.useState<Date | undefined>(defaultValue);
   const [isOpen, setIsOpen] = React.useState(false);
 
   React.useEffect(() => {
-    if (!date) return;
-    setIsOpen(false);
-    onChange(date);
-  }, [date]);
+    if (date === defaultValue) return;
+    setDate(defaultValue)
+  }, [defaultValue, date])
 
   return (
     <Popover onOpenChange={setIsOpen} open={isOpen}>
@@ -53,7 +58,12 @@ export function DatePicker({ onChange, startDate, isError }: DatePickerProps) {
         <Calendar
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={date => {
+            if (!date) return;
+            setDate(date);
+            onChange(date);
+            setIsOpen(false);
+          }}
           initialFocus
           fromDate={startDate}
         />

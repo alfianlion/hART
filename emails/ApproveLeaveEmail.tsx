@@ -11,6 +11,8 @@ type ApproveLeaveEmailProps = {
   duration: string;
   type: string;
   description: string | null;
+  update: boolean;
+  cancel: boolean;
 };
 
 const ApproveLeaveEmail = ({
@@ -20,6 +22,8 @@ const ApproveLeaveEmail = ({
   duration = '10 October 2023 - 11 October 2023',
   type = 'Full Day',
   description = null,
+  update,
+  cancel,
 }: ApproveLeaveEmailProps) => {
   const baseUrl = 'http://localhost:3000';
   // process.env['NODE_ENV'] === 'production' ? 'TODO' : 'http://localhost:3000';
@@ -50,63 +54,81 @@ const ApproveLeaveEmail = ({
           }}
         >
           <h1>Hi {roName},</h1>
-          <p>
-            {staffName} has requested for a <b>{type}</b> leave on{' '}
-            <b>{duration}</b>.
-          </p>
-          <p
-            style={{
-              fontStyle: description ? 'normal' : 'italic',
-              backgroundColor: "#F4F4F4",
-              padding: '1rem',
-              borderRadius: '4px'
-            }}
-          >
-            {description ?? 'No Details were provided'}
-          </p>
-          <p>Please click the button below to approve or reject the request.</p>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              margin: '20px 0',
-              width: '100%',
-            }}
-          >
-            <Button
-              style={{
-                backgroundColor: '#2563eb',
-                borderRadius: '40px',
-                color: '#ffffff',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                padding: '10px 20px',
-                textDecoration: 'none',
-                textAlign: 'center',
-                flex: 1,
-              }}
-              href={approveLeaveLink}
-            >
-              Approve
-            </Button>
-            <Button
-              style={{
-                backgroundColor: '#e00000',
-                borderRadius: '40px',
-                color: '#ffffff',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                marginLeft: '10px',
-                padding: '10px 20px',
-                textDecoration: 'none',
-                textAlign: 'center',
-                flex: 1,
-              }}
-              href={rejectLeaveLink}
-            >
-              Reject
-            </Button>
-          </div>
+          {update ? (
+            <p>
+              {staffName} has updated the request for a <b>{type}</b> leave on{' '}
+              <b>{duration}</b>.
+            </p>
+          ) : cancel ? (
+            <p>
+              {staffName} has cancelled the request for a <b>{type}</b> leave on{' '}
+              <b>{duration}</b>.
+            </p>
+          ) : (
+            <p>
+              {staffName} has requested for a <b>{type}</b> leave on{' '}
+              <b>{duration}</b>.
+            </p>
+          )}
+          {!cancel && (
+            <>
+              <p
+                style={{
+                  fontStyle: description ? 'normal' : 'italic',
+                  backgroundColor: '#F4F4F4',
+                  padding: '1rem',
+                  borderRadius: '4px',
+                }}
+              >
+                {description ?? 'No Details were provided'}
+              </p>
+              <p>
+                Please click the button below to approve or reject the request.
+              </p>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  margin: '20px 0',
+                  width: '100%',
+                }}
+              >
+                <Button
+                  style={{
+                    backgroundColor: '#2563eb',
+                    borderRadius: '40px',
+                    color: '#ffffff',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    padding: '10px 20px',
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                    flex: 1,
+                  }}
+                  href={approveLeaveLink}
+                >
+                  Approve
+                </Button>
+                <Button
+                  style={{
+                    backgroundColor: '#e00000',
+                    borderRadius: '40px',
+                    color: '#ffffff',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    marginLeft: '10px',
+                    padding: '10px 20px',
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                    flex: 1,
+                  }}
+                  href={rejectLeaveLink}
+                >
+                  Reject
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </Body>
     </Html>

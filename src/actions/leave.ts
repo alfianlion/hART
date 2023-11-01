@@ -28,11 +28,14 @@ export const saveLeave = async (data: ApplyLeaveSchemaType) => {
       staffId,
     },
   });
-  await sendEmail(result);
+  await sendEmail(result, 'create');
   return result;
 };
 
-const sendEmail = async (leave: Leave) => {
+const sendEmail = async (
+  leave: Leave,
+  typeOfEmail: 'update' | 'create' | 'cancel'
+) => {
   const staff = await prisma.staff.findUnique({
     where: {
       id: leave.staffId,
@@ -72,7 +75,12 @@ const sendEmail = async (leave: Leave) => {
           : 'nasrullah01n@gmail.com',
         staff.email,
       ],
-      subject: `Approve Leave Request by ${staff.name} (${type}) on ${duration}`,
+      subject:
+        typeOfEmail === 'cancel'
+          ? `Cancelled Leave on ${duration} by ${staff.name} (${type})`
+          : `${
+              typeOfEmail === 'update' ? '[UPDATE] ' : ''
+            }Approve Leave Request by ${staff.name} (${type}) on ${duration}`,
       react: ApproveLeaveEmail({
         duration: duration,
         leaveId: leave.id,
@@ -80,10 +88,43 @@ const sendEmail = async (leave: Leave) => {
         staffName: staff.name,
         type: type,
         description: leave.leaveDetails,
+        update: typeOfEmail === 'update',
+        cancel: typeOfEmail === 'cancel'
       }),
     });
     return data;
   } catch (error) {
     console.error(error);
   }
+};
+
+export const updateLeave = async (id: string, data: ApplyLeaveSchemaType) => {
+  const updateLeaveData = ApplyLeaveSchema.parse(data);
+  const result = await prisma.leave.update({
+    where: {
+      id,
+    },
+    data: {
+      leaveType: updateLeaveData.leaveType,
+      startDate: updateLeaveData.startDate,
+      endDate: updateLeaveData.endDate,
+      leaveDetails: updateLeaveData.leaveDetails,
+      leaveCategory: LeaveCategory.MOM,
+      leaveStatus: 'PENDING',
+      roId: updateLeaveData.reportingOfficer,
+    },
+  });
+  await sendEmail(result, 'update');
+  return result;
+};
+
+export const cancelLeave = async (id: string) => {
+  const result = await prisma.leave.update({
+    where: { id },
+    data: {
+      leaveStatus: 'CANCELLED',
+    },
+  });
+  await sendEmail(result, 'cancel');
+  return result;
 };

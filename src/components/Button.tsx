@@ -32,7 +32,7 @@ export const Button = ({
     primary:
       'bg-blue-600 text-slate-200 hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:text-slate-200',
     secondary:
-      'border-2 border-blue-700 text-blue-600 hover:bg-blue-700 hover:text-slate-300 disabled:border-gray-500 disabled:bg-transparent disabled:text-slate-300 disabled:cursor-not-allowed',
+      'border-2 border-blue-700 text-blue-600 hover:bg-blue-700/50 hover:text-slate-100 disabled:border-gray-500 disabled:bg-transparent disabled:text-slate-700 disabled:cursor-not-allowed',
   };
 
   return (
