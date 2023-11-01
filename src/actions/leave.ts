@@ -7,6 +7,7 @@ import { Leave, LeaveCategory, LeaveType } from '@prisma/client';
 import { Resend } from 'resend';
 import ApproveLeaveEmail from '../../emails/ApproveLeaveEmail';
 import { format, isSameDay } from 'date-fns';
+import ApproveRejectResultEmail from '../../emails/ApproveRejectResultEmail';
 
 const resend = new Resend(process.env['RESEND_API_KEY']);
 
@@ -73,7 +74,6 @@ const sendEmail = async (
         process.env['NODE_ENV'] === 'production'
           ? ro.email
           : 'nasrullah01n@gmail.com',
-        staff.email,
       ],
       subject:
         typeOfEmail === 'cancel'
@@ -89,7 +89,7 @@ const sendEmail = async (
         type: type,
         description: leave.leaveDetails,
         update: typeOfEmail === 'update',
-        cancel: typeOfEmail === 'cancel'
+        cancel: typeOfEmail === 'cancel',
       }),
     });
     return data;
@@ -98,11 +98,35 @@ const sendEmail = async (
   }
 };
 
+const updateRemainingLeaves = async () => {
+  const currentUser = (await getCurrentUser())!;
+  const leaves = await prisma.leave.findMany({
+    where: {
+      leaveStatus: 'APPROVED',
+      staffId: currentUser.id,
+    },
+  });
+  let leavesTaken = 0;
+  leaves.forEach(leave => {
+    leavesTaken += leave.leaveType === 'FULL' ? 1 : 0.5;
+  });
+  const remainingLeaves = (currentUser.leaves ?? 12) - leavesTaken;
+  await prisma.staff.update({
+    where: {
+      id: currentUser.id,
+    },
+    data: {
+      remainingLeaves,
+    },
+  });
+};
+
 export const updateLeave = async (id: string, data: ApplyLeaveSchemaType) => {
+  const leave = await getLeave(id);
   const updateLeaveData = ApplyLeaveSchema.parse(data);
   const result = await prisma.leave.update({
     where: {
-      id,
+      id: leave.id,
     },
     data: {
       leaveType: updateLeaveData.leaveType,
@@ -114,17 +138,134 @@ export const updateLeave = async (id: string, data: ApplyLeaveSchemaType) => {
       roId: updateLeaveData.reportingOfficer,
     },
   });
+  await updateRemainingLeaves();
   await sendEmail(result, 'update');
   return result;
 };
 
 export const cancelLeave = async (id: string) => {
+  const leave = await getLeave(id);
   const result = await prisma.leave.update({
-    where: { id },
+    where: { id: leave.id },
     data: {
       leaveStatus: 'CANCELLED',
     },
   });
+  await updateRemainingLeaves();
   await sendEmail(result, 'cancel');
   return result;
+};
+
+export const approveLeave = async (id: string) => {
+  const currentUser = (await getCurrentUser())!;
+  const leave = await prisma.leave.findFirst({
+    where: {
+      id,
+      roId: currentUser.id,
+    },
+  });
+  if (!leave) throw new Error('Leave not found!');
+  const result = await prisma.leave.update({
+    where: {
+      id: leave.id,
+    },
+    data: {
+      leaveStatus: 'APPROVED',
+    },
+  });
+  await updateRemainingLeaves();
+  await sendApproveEmail(result, 'approve');
+  return result;
+};
+
+export const rejectLeave = async (id: string, reason: string) => {
+  const currentUser = (await getCurrentUser())!;
+  const leave = await prisma.leave.findFirst({
+    where: {
+      id,
+      roId: currentUser.id,
+    },
+  });
+  if (!leave) throw new Error('Leave not found!');
+  const result = await prisma.leave.update({
+    where: { id: leave.id },
+    data: {
+      leaveStatus: 'REJECTED',
+      rejectedDetails: reason,
+    },
+  });
+  await sendApproveEmail(result, 'reject');
+  return result;
+};
+
+async function getLeave(id: string) {
+  const currentUser = (await getCurrentUser())!;
+  const leave = await prisma.leave.findUnique({
+    where: { id },
+  });
+  if (leave?.staffId !== currentUser.id) {
+    throw new Error("Cannot update other staff's leaves");
+  }
+  return leave;
+}
+
+const sendApproveEmail = async (
+  leave: Leave,
+  typeOfEmail: 'approve' | 'reject'
+) => {
+  const staff = await prisma.staff.findUnique({
+    where: {
+      id: leave.staffId,
+    },
+  });
+  if (!staff) {
+    throw new Error('Staff not found!');
+  }
+  const ro = await prisma.staff.findUnique({
+    where: {
+      id: leave.roId,
+    },
+  });
+  if (!ro) {
+    throw new Error('Reporting Officer not found!');
+  }
+  try {
+    const duration =
+      leave.leaveType === 'FULL' && !isSameDay(leave.startDate, leave.endDate)
+        ? `${format(leave.startDate, 'dd MMM yyyy')} - ${format(
+            leave.endDate,
+            'dd MMM yyyy'
+          )}`
+        : format(leave.startDate, 'dd MMM yyyy');
+
+    const type = {
+      [LeaveType.FULL]: 'Full Day',
+      [LeaveType.HALF_AM]: 'Half Day (AM)',
+      [LeaveType.HALF_PM]: 'Half Day (PM)',
+    }[leave.leaveType];
+
+    const data = await resend.emails.send({
+      from: 'noreply <noreply@resend.dev>',
+      to: [
+        process.env['NODE_ENV'] === 'production'
+          ? ro.email
+          : 'nasrullah01n@gmail.com',
+      ],
+      subject:
+        typeOfEmail === 'approve'
+          ? `Approved Leave on ${duration} (${type}) by ${ro.name}`
+          : `Rejected Leave on ${duration} (${type}) by ${ro.name}`,
+      react: ApproveRejectResultEmail({
+        duration: duration,
+        roName: ro.name,
+        staffName: staff.name,
+        type: type,
+        description: leave.rejectedDetails,
+        typeOfEmail: typeOfEmail,
+      }),
+    });
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
 };

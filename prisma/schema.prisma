@@ -13,24 +13,15 @@ enum StaffType {
 }
 
 model Staff {
-  id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  name           String
-  email          String    @unique
-  password       String
-  type           StaffType @default(INTERN)
-  leaves         Float?
-  GVTStaff       GVTStaff?
-  appliedLeaves  Leave[]   @relation("staff")
-  assignedLeaves Leave[]   @relation("ro")
-}
-
-model GVTStaff {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  name    String
-  email   String
-  leaves  Float
-  staff   Staff  @relation(fields: [staffId], references: [id])
-  staffId String @unique @db.ObjectId
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  email           String    @unique
+  password        String
+  type            StaffType @default(INTERN)
+  leaves          Float?
+  remainingLeaves Float?
+  appliedLeaves   Leave[]   @relation("staff")
+  assignedLeaves  Leave[]   @relation("ro")
 }
 
 enum LeaveCategory {
