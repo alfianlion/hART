@@ -1,13 +1,13 @@
 'use client';
 
-import { AuthUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
+import { Staff } from '@prisma/client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
 type NavbarProps = {
-  user: AuthUser | null;
+  user: Staff | null;
 };
 
 export const Navbar = ({ user }: NavbarProps) => {

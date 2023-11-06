@@ -8,6 +8,7 @@ import { Resend } from 'resend';
 import ApproveLeaveEmail from '../../emails/ApproveLeaveEmail';
 import { format, isSameDay } from 'date-fns';
 import ApproveRejectResultEmail from '../../emails/ApproveRejectResultEmail';
+import { getRemainingLeaves } from '@/components/RemainingLeaves';
 
 const resend = new Resend(process.env['RESEND_API_KEY']);
 
@@ -106,11 +107,7 @@ const updateRemainingLeaves = async () => {
       staffId: currentUser.id,
     },
   });
-  let leavesTaken = 0;
-  leaves.forEach(leave => {
-    leavesTaken += leave.leaveType === 'FULL' ? 1 : 0.5;
-  });
-  const remainingLeaves = (currentUser.leaves ?? 12) - leavesTaken;
+  const remainingLeaves = getRemainingLeaves(currentUser.leaves ?? 12, leaves);
   await prisma.staff.update({
     where: {
       id: currentUser.id,

@@ -26,13 +26,12 @@ export function DatePicker({
   isError,
   defaultValue,
 }: DatePickerProps) {
-  const [date, setDate] = React.useState<Date | undefined>(defaultValue);
+  const [date, setDate] = React.useState<Date | undefined>();
   const [isOpen, setIsOpen] = React.useState(false);
 
   React.useEffect(() => {
-    if (date === defaultValue) return;
     setDate(defaultValue)
-  }, [defaultValue, date])
+  }, [defaultValue])
 
   return (
     <Popover onOpenChange={setIsOpen} open={isOpen}>

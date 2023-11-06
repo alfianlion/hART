@@ -31,6 +31,9 @@ export default function ApplyLeaveForm({
     formState: { errors, isSubmitting },
   } = useForm<ApplyLeaveSchemaType>({
     resolver: zodResolver(ApplyLeaveSchema),
+    defaultValues: {
+      leaveType: LeaveType.FULL,
+    }
   });
 
   const leaveType = watch('leaveType');

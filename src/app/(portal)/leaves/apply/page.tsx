@@ -1,4 +1,6 @@
-import RemainingLeaves from '@/components/RemainingLeaves';
+import RemainingLeaves, {
+  getRemainingLeaves,
+} from '@/components/RemainingLeaves';
 import { prisma } from '@/lib/database';
 import ApplyLeaveForm from './ApplyLeaveForm';
 import { StaffType } from '@prisma/client';
@@ -22,11 +24,7 @@ export default async function ApplyLeavePage() {
     },
   });
 
-  let remainingLeaves = 0;
-  leaves.forEach(leave => {
-    remainingLeaves += leave.leaveType === 'FULL' ? 1 : 0.5;
-  });
-  remainingLeaves = Math.max((currentUser.leaves ?? 0) - remainingLeaves, 0);
+  const remainingLeaves = getRemainingLeaves(currentUser.leaves ?? 0, leaves);
 
   return (
     <div>
