@@ -5,10 +5,9 @@ import { prisma } from '@/lib/database';
 import { ApplyLeaveSchema, ApplyLeaveSchemaType } from '@/schema/leaves';
 import { Leave, LeaveCategory, LeaveType } from '@prisma/client';
 import { Resend } from 'resend';
-import ApproveLeaveEmail from '../../emails/ApproveLeaveEmail';
 import { format, isSameDay } from 'date-fns';
-import ApproveRejectResultEmail from '../../emails/ApproveRejectResultEmail';
 import { getRemainingLeaves } from '@/components/RemainingLeaves';
+import { ApproveLeaveEmail, ApproveRejectResultEmail } from '@/emails';
 
 const resend = new Resend(process.env['RESEND_API_KEY']);
 
