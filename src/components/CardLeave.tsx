@@ -1,10 +1,9 @@
 'use client';
-
 import { Leave, LeaveStatus, LeaveType } from '@prisma/client';
 import { format, isSameDay } from 'date-fns';
 import { CalendarRangeIcon, ClipboardEdit, User2, XCircle } from 'lucide-react';
 import Link from 'next/link';
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, Suspense } from 'react';
 
 type CardProps = {
   leave: Leave & {
@@ -46,12 +45,6 @@ export default function CardLeaves({ leave, isIntern }: CardProps) {
   } as {
     [key in LeaveType]: string;
   };
-
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const Parent: FC<{ children: ReactNode }> = ({ children }) => {
     const className = `relative shadow-md rounded-md pt-1 pb-3 px-3 flex gap-2 flex-col w-[calc(25%-24px)] min-w-[250px] bg-white justify-between`;
@@ -98,32 +91,34 @@ export default function CardLeaves({ leave, isIntern }: CardProps) {
           </div>
         )}
       </div>
-      {isMounted && !isIntern && (
-        <div className="flex gap-2 w-full">
-          {[
-            {
-              label: 'Approve',
-              href: `/leaves/${leave.id}/approve`,
-            },
-            {
-              label: 'Reject',
-              href: `/leaves/${leave.id}/reject`,
-            },
-          ].map(({ label, href }, index) => (
-            <Link
-              key={label}
-              href={href}
-              className={`flex-1 px-4 py-2 rounded-md text-center text-slate-100 transition ${
-                index === 1
-                  ? 'bg-red-600 hover:bg-red-700'
-                  : 'bg-blue-700 hover:bg-blue-800'
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
-        </div>
-      )}
+      <Suspense>
+        {!isIntern && (
+          <div className="flex gap-2 w-full">
+            {[
+              {
+                label: 'Approve',
+                href: `/leaves/${leave.id}/approve`,
+              },
+              {
+                label: 'Reject',
+                href: `/leaves/${leave.id}/reject`,
+              },
+            ].map(({ label, href }, index) => (
+              <Link
+                key={label}
+                href={href}
+                className={`flex-1 px-4 py-2 rounded-md text-center text-slate-100 transition ${
+                  index === 1
+                    ? 'bg-red-600 hover:bg-red-700'
+                    : 'bg-blue-700 hover:bg-blue-800'
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        )}
+      </Suspense>
     </Parent>
   );
 }
