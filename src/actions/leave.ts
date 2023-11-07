@@ -81,7 +81,7 @@ const sendEmail = async (
           : `${
               typeOfEmail === 'update' ? '[UPDATE] ' : ''
             }Approve Leave Request by ${staff.name} (${type}) on ${duration}`,
-      react: ApproveLeaveEmail({
+      html: ApproveLeaveEmail({
         duration: duration,
         leaveId: leave.id,
         roName: ro.name,
@@ -251,7 +251,7 @@ const sendApproveEmail = async (
         typeOfEmail === 'approve'
           ? `Approved Leave on ${duration} (${type}) by ${ro.name}`
           : `Rejected Leave on ${duration} (${type}) by ${ro.name}`,
-      react: ApproveRejectResultEmail({
+      html: ApproveRejectResultEmail({
         duration: duration,
         roName: ro.name,
         staffName: staff.name,

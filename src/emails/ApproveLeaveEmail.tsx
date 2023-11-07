@@ -1,8 +1,3 @@
-import { Html } from '@react-email/html';
-import { Head } from '@react-email/head';
-import { Body } from '@react-email/body';
-import { Button } from '@react-email/Button';
-
 type ApproveLeaveEmailProps = {
   leaveId: string;
   roName: string;
@@ -25,110 +20,45 @@ const ApproveLeaveEmail = ({
   cancel,
 }: ApproveLeaveEmailProps) => {
   const baseUrl = process.env['NEXTAUTH_URL'];
-  // process.env['NODE_ENV'] === 'production' ? 'TODO' : 'http://localhost:3000';
 
   const approveLeaveLink = `${baseUrl}/leaves/${leaveId}/approve`;
   const rejectLeaveLink = `${baseUrl}/leaves/${leaveId}/reject`;
 
-  return (
-    <Html>
-      <Head />
-      <Body
-        style={{
-          backgroundColor: '#ffffff',
-          fontFamily: 'sans-serif',
-          margin: 'auto',
-        }}
-      >
-        <div
-          style={{
-            border: '1px solid #eaeaea',
-            borderRadius: '40px',
-            margin: '40px auto',
-            padding: '20px',
-            width: '550px',
-          }}
-        >
-          <h1>Hi {roName},</h1>
-          {update ? (
-            <p>
-              {staffName} has updated the request for a <b>{type}</b> leave on{' '}
-              <b>{duration}</b>.
+  const content = `
+    <html>
+      <head></head>
+      <body style="background-color: #ffffff; font-family: sans-serif; margin: auto;">
+        <div style="border: 1px solid #eaeaea; border-radius: 40px; margin: 40px auto; padding: 20px; width: 550px;">
+          <h1>Hi ${roName},</h1>
+          ${
+            update
+              ? `<p>${staffName} has updated the request for a <b>${type}</b> leave on <b>${duration}</b>.</p>`
+              : cancel
+              ? `<p>${staffName} has cancelled the request for a <b>${type}</b> leave on <b>${duration}</b>.</p>`
+              : `<p>${staffName} has requested for a <b>${type}</b> leave on <b>${duration}</b>.</p>`
+          }
+          ${
+            !cancel
+              ? `
+            <p style="font-style: ${
+              description ? 'normal' : 'italic'
+            }; background-color: #F4F4F4; padding: 1rem; border-radius: 4px;">
+              ${description ?? 'No Details were provided'}
             </p>
-          ) : cancel ? (
-            <p>
-              {staffName} has cancelled the request for a <b>{type}</b> leave on{' '}
-              <b>{duration}</b>.
-            </p>
-          ) : (
-            <p>
-              {staffName} has requested for a <b>{type}</b> leave on{' '}
-              <b>{duration}</b>.
-            </p>
-          )}
-          {!cancel && (
-            <>
-              <p
-                style={{
-                  fontStyle: description ? 'normal' : 'italic',
-                  backgroundColor: '#F4F4F4',
-                  padding: '1rem',
-                  borderRadius: '4px',
-                }}
-              >
-                {description ?? 'No Details were provided'}
-              </p>
-              <p>
-                Please click the button below to approve or reject the request.
-              </p>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  margin: '20px 0',
-                  width: '100%',
-                }}
-              >
-                <Button
-                  style={{
-                    backgroundColor: '#2563eb',
-                    borderRadius: '40px',
-                    color: '#ffffff',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    padding: '10px 20px',
-                    textDecoration: 'none',
-                    textAlign: 'center',
-                    flex: 1,
-                  }}
-                  href={approveLeaveLink}
-                >
-                  Approve
-                </Button>
-                <Button
-                  style={{
-                    backgroundColor: '#e00000',
-                    borderRadius: '40px',
-                    color: '#ffffff',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    marginLeft: '10px',
-                    padding: '10px 20px',
-                    textDecoration: 'none',
-                    textAlign: 'center',
-                    flex: 1,
-                  }}
-                  href={rejectLeaveLink}
-                >
-                  Reject
-                </Button>
-              </div>
-            </>
-          )}
+            <p>Please click the button below to approve or reject the request.</p>
+            <div style="display: flex; justify-content: center; margin: 20px 0; width: 100%;">
+              <a href="${approveLeaveLink}" style="background-color: #2563eb; border-radius: 40px; color: #ffffff; font-size: 16px; font-weight: bold; padding: 10px 20px; text-decoration: none; text-align: center; flex: 1;">Approve</a>
+              <a href="${rejectLeaveLink}" style="background-color: #e00000; border-radius: 40px; color: #ffffff; font-size: 16px; font-weight: bold; margin-left: 10px; padding: 10px 20px; text-decoration: none; text-align: center; flex: 1;">Reject</a>
+            </div>
+          `
+              : ''
+          }
         </div>
-      </Body>
-    </Html>
-  );
+      </body>
+    </html>
+  `;
+
+  return content;
 };
 
 export default ApproveLeaveEmail;
