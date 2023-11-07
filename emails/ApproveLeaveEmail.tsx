@@ -24,7 +24,7 @@ const ApproveLeaveEmail = ({
   update,
   cancel,
 }: ApproveLeaveEmailProps) => {
-  const baseUrl = 'http://localhost:3000';
+  const baseUrl = process.env['NEXTAUTH_URL'];
   // process.env['NODE_ENV'] === 'production' ? 'TODO' : 'http://localhost:3000';
 
   const approveLeaveLink = `${baseUrl}/leaves/${leaveId}/approve`;
