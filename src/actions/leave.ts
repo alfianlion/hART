@@ -68,6 +68,8 @@ const sendEmail = async (
       [LeaveType.HALF_PM]: 'Half Day (PM)',
     }[leave.leaveType];
 
+    console.log(process.env['NODE_ENV'], ro.email);
+
     const data = await resend.emails.send({
       from: 'noreply <noreply@resend.dev>',
       to: [
@@ -239,6 +241,8 @@ const sendApproveEmail = async (
       [LeaveType.HALF_AM]: 'Half Day (AM)',
       [LeaveType.HALF_PM]: 'Half Day (PM)',
     }[leave.leaveType];
+
+    console.log(process.env['NODE_ENV'], ro.email);
 
     const data = await resend.emails.send({
       from: 'noreply <noreply@resend.dev>',
