@@ -29,7 +29,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             <textarea
               {...(props as any)}
               ref={ref as any}
-              className={`bg-slate-200/0 p-3 transition rounded-md outline-none text-slate-800 border-2 focus:bg-slate-200 h-48 resize-none ${height} ${
+              className={`bg-background focus:bg-accent p-3 transition rounded-md outline-none text-slate-800 border-2 focus:bg-slate-200 h-48 resize-none ${height} ${
                 error
                   ? 'border-red-500 focus:border-red-600'
                   : 'border-blue-600 focus:border-blue-700'

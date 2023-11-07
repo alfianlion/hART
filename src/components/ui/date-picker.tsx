@@ -26,12 +26,18 @@ export function DatePicker({
   isError,
   defaultValue,
 }: DatePickerProps) {
-  const [date, setDate] = React.useState<Date | undefined>();
+  const [date, setDate] = React.useState<Date>(new Date());
   const [isOpen, setIsOpen] = React.useState(false);
 
   React.useEffect(() => {
+    if (!defaultValue) return;
     setDate(defaultValue)
   }, [defaultValue])
+
+  React.useEffect(() => {
+    if (!date) return;
+    onChange(date)
+  }, [date])
 
   return (
     <Popover onOpenChange={setIsOpen} open={isOpen}>
@@ -60,7 +66,6 @@ export function DatePicker({
           onSelect={date => {
             if (!date) return;
             setDate(date);
-            onChange(date);
             setIsOpen(false);
           }}
           initialFocus

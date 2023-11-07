@@ -58,9 +58,10 @@ export function Combobox({
             type="button"
             aria-expanded={open}
             className={cn(
-              'w-full justify-between cursor-pointer bg-slate-200/0 p-3 transition rounded-md outline-none text-slate-800 border-2 focus:bg-slate-200 border-blue-600',
+              'w-full justify-between cursor-pointer p-3 transition rounded-md outline-none border-2 border-blue-600 focus:bg-accent',
               open && 'bg-slate-200',
-              error && 'border-red-500'
+              error && 'border-red-500',
+              '!outline-none'
             )}
           >
             {value
@@ -90,7 +91,6 @@ export function Combobox({
                   setOpen(false);
                   onChange(item.value)
                 }}
-                className="text-slate-700 bg-slate-100 hover:bg-slate-200 p-3 transition border-b border-slate-300 last:border-none cursor-pointer"
               >
                 <Check
                   className={cn(

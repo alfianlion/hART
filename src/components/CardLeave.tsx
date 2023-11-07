@@ -4,7 +4,7 @@ import { Leave, LeaveStatus, LeaveType } from '@prisma/client';
 import { format, isSameDay } from 'date-fns';
 import { CalendarRangeIcon, ClipboardEdit, User2, XCircle } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 
 type CardProps = {
   leave: Leave & {
@@ -53,11 +53,20 @@ export default function CardLeaves({ leave, isIntern }: CardProps) {
     setIsMounted(true);
   }, []);
 
+  const Parent: FC<{ children: ReactNode }> = ({ children }) => {
+    const className = `relative shadow-md rounded-md pt-1 pb-3 px-3 flex gap-2 flex-col w-[calc(25%-24px)] min-w-[250px] bg-white justify-between`;
+    if (isIntern) {
+      return (
+        <Link href={`/leaves/${leave.id}`} className={className}>
+          {children}
+        </Link>
+      );
+    }
+    return <div className={className}>{children}</div>;
+  };
+
   return (
-    <Link
-      href={`/leaves/${leave.id}`}
-      className={`relative shadow-md rounded-md pt-1 pb-3 px-3 flex gap-2 flex-col w-[calc(25%-24px)] min-w-[250px] bg-white justify-between`}
-    >
+    <Parent>
       <div className="flex gap-2 flex-col w-full">
         <div
           className={`font-bold rounded-tr-md rounded-bl-md absolute top-0 right-0 py-1 px-2 ${badgeColors[leaveStatus]}`}
@@ -115,6 +124,6 @@ export default function CardLeaves({ leave, isIntern }: CardProps) {
           ))}
         </div>
       )}
-    </Link>
+    </Parent>
   );
 }
