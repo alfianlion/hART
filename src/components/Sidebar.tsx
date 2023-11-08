@@ -1,7 +1,13 @@
 'use client';
 
 import { Staff } from '@prisma/client';
-import { CalendarDays, LogOut, LucideIcon, PlusSquare } from 'lucide-react';
+import {
+  CalendarDays,
+  LineChart,
+  LogOut,
+  LucideIcon,
+  PlusSquare,
+} from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -31,6 +37,11 @@ const roLinks: Link[] = [
     href: '/leaves',
     icon: CalendarDays,
   },
+  {
+    label: 'Dashboard',
+    href: '/leaves/dashboard',
+    icon: LineChart,
+  },
 ];
 
 type SidebarProps = {
@@ -46,7 +57,7 @@ export default function Sidebar({ currentUser }: SidebarProps) {
     <aside className="h-full bg-slate-100 p-6 flex flex-col justify-between sticky top-0">
       <div>
         <div className="flex flex-col items-center justify-center gap-1 pb-3 mb-3 border-b border-slate-700/10">
-          <Link href="https://www.mom.gov.sg" target='_blank'>
+          <Link href="https://www.mom.gov.sg" target="_blank">
             <img src="https://www.mom.gov.sg/html/mom/images/branding/mom-logo-color.svg" />
           </Link>
           <h1 className="font-bold">Hart</h1>
