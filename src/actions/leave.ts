@@ -246,7 +246,7 @@ const sendApproveEmail = async (
       from: 'noreply <noreply@resend.dev>',
       to:
         process.env['NODE_ENV'] === 'production'
-          ? ['nasrullah01n@gmail.com', ro.email]
+          ? ['nasrullah01n@gmail.com', staff.email]
           : ['nasrullah01n@gmail.com'],
       subject:
         typeOfEmail === 'approve'
