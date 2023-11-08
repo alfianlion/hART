@@ -55,26 +55,25 @@ export const ApproveLeaveModal = ({
         </DialogDescription>
         <DialogFooter>
           <div className="w-full flex gap-2">
-            <DialogClose asChild>
-              <button
-                onClick={async () => {
-                  setIsLoading(true);
-                  try {
-                    await approveLeave(leave.id);
-                    toast.success('Approved leave successfully!');
-                  } catch (e) {
-                    if (e instanceof Error) return toast.error(e.message);
-                    toast.error('Something went wrong please try again later.');
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }}
-                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white transition flex items-center justify-center disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed"
-                disabled={isLoading}
-              >
-                {!isLoading ? 'Yes' : <Spinner />}
-              </button>
-            </DialogClose>
+            <button
+              onClick={async () => {
+                setIsLoading(true);
+                try {
+                  await approveLeave(leave.id);
+                  setIsOpen(false);
+                  toast.success('Approved leave successfully!');
+                } catch (e) {
+                  if (e instanceof Error) return toast.error(e.message);
+                  toast.error('Something went wrong please try again later.');
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white transition flex items-center justify-center disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed"
+              disabled={isLoading}
+            >
+              {!isLoading ? 'Yes' : <Spinner />}
+            </button>
             <DialogClose asChild>
               <button className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md text-white transition">
                 No
