@@ -32,7 +32,7 @@ const internLinks: Link[] = [
 
 const roLinks: Link[] = [
   {
-    label: 'View Leave',
+    label: 'View Pending Leave',
     href: '/leaves',
   },
   {

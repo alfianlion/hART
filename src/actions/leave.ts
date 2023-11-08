@@ -8,6 +8,7 @@ import { Resend } from 'resend';
 import { format, isSameDay } from 'date-fns';
 import { getRemainingLeaves } from '@/components/RemainingLeaves';
 import { ApproveLeaveEmail, ApproveRejectResultEmail } from '@/emails';
+import { revalidatePath } from 'next/cache';
 
 const resend = new Resend(process.env['RESEND_API_KEY']);
 
@@ -170,6 +171,7 @@ export const approveLeave = async (id: string) => {
   });
   await updateRemainingLeaves();
   await sendApproveEmail(result, 'approve');
+  revalidatePath('/', 'layout');
   return result;
 };
 
@@ -190,6 +192,7 @@ export const rejectLeave = async (id: string, reason: string) => {
     },
   });
   await sendApproveEmail(result, 'reject');
+  revalidatePath('/', 'layout');
   return result;
 };
 

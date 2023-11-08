@@ -37,6 +37,7 @@ export default async function LeavesPage() {
         totalLeaves={currentUser?.leaves ?? 0}
         staffId={currentUser?.id}
       />
+      <h1 className="text-2xl font-bold">Hi {currentUser.name}</h1>
       <div className="flex flex-wrap gap-6 justify-center">
         {appliedLeaves.map(leave => (
           <CardLeaves key={leave.id} leave={leave} isIntern={isIntern} />

@@ -1,18 +1,16 @@
 'use client';
-import { Leave, LeaveStatus, LeaveType } from '@prisma/client';
+import { Leave, LeaveStatus, LeaveType, Staff } from '@prisma/client';
 import { format, isSameDay } from 'date-fns';
 import { CalendarRangeIcon, ClipboardEdit, User2, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { FC, ReactNode, Suspense } from 'react';
+import { ApproveLeaveModal } from '@/app/(portal)/leaves/_components/ApproveLeaveModal';
+import { RejectLeaveModal } from '@/app/(portal)/leaves/_components/RejectLeaveModal';
 
 type CardProps = {
   leave: Leave & {
-    staff: {
-      name: string;
-    };
-    ro: {
-      name: string;
-    };
+    staff: Staff;
+    ro: Staff;
   };
   isIntern: boolean;
 };
@@ -87,35 +85,29 @@ export default function CardLeaves({ leave, isIntern }: CardProps) {
         {leaveStatus === LeaveStatus.REJECTED && (
           <div className="flex items-start gap-2">
             <XCircle className="shrink-0" />
-            {rejectedDetails ?? <i>No details were provided</i>}
+            {rejectedDetails || <i>No details were provided</i>}
           </div>
         )}
       </div>
       <Suspense>
         {!isIntern && (
           <div className="flex gap-2 w-full">
-            {[
-              {
-                label: 'Approve',
-                href: `/leaves/${leave.id}/approve`,
-              },
-              {
-                label: 'Reject',
-                href: `/leaves/${leave.id}/reject`,
-              },
-            ].map(({ label, href }, index) => (
-              <Link
-                key={label}
-                href={href}
-                className={`flex-1 px-4 py-2 rounded-md text-center text-slate-100 transition ${
-                  index === 1
-                    ? 'bg-red-600 hover:bg-red-700'
-                    : 'bg-blue-700 hover:bg-blue-800'
-                }`}
+            <ApproveLeaveModal leave={leave}>
+              <button
+                key={'Approve'}
+                className={`flex-1 px-4 py-2 rounded-md text-center text-slate-100 transition bg-blue-700 hover:bg-blue-800`}
               >
-                {label}
-              </Link>
-            ))}
+                Approve
+              </button>
+            </ApproveLeaveModal>
+            <RejectLeaveModal leave={leave}>
+              <button
+                key={'reject'}
+                className="flex-1 px-4 py-2 rounded-md text-center text-slate-100 transition bg-red-600 hover:bg-red-700"
+              >
+                Reject
+              </button>
+            </RejectLeaveModal>
           </div>
         )}
       </Suspense>
