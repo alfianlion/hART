@@ -21,8 +21,8 @@ const ApproveLeaveEmail = ({
 }: ApproveLeaveEmailProps) => {
   const baseUrl = process.env['NEXTAUTH_URL'];
 
-  const approveLeaveLink = `${baseUrl}/leaves/${leaveId}/approve`;
-  const rejectLeaveLink = `${baseUrl}/leaves/${leaveId}/reject`;
+  const approveLeaveLink = `${baseUrl}/leaves?id=${leaveId}&mode=approve`;
+  const rejectLeaveLink = `${baseUrl}/leaves?id=${leaveId}&mode=reject`;
 
   const content = `
     <html>

@@ -68,7 +68,7 @@ export default function ApplyLeaveForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col max-w-md w-full bg-slate-100 shadow-lg p-3 mx-auto rounded-md mt-6 gap-3"
+      className="flex flex-col max-w-md w-full bg-white shadow-lg p-3 mx-auto rounded-md mt-6 gap-3"
     >
       <Combobox
         key="ro"

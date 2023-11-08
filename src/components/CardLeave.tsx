@@ -13,9 +13,10 @@ type CardProps = {
     ro: Staff;
   };
   isIntern: boolean;
+  showModal: 'approve' | 'reject' | undefined;
 };
 
-export default function CardLeaves({ leave, isIntern }: CardProps) {
+export default function CardLeaves({ leave, isIntern, showModal }: CardProps) {
   const {
     leaveStatus,
     startDate,
@@ -92,7 +93,7 @@ export default function CardLeaves({ leave, isIntern }: CardProps) {
       <Suspense>
         {!isIntern && (
           <div className="flex gap-2 w-full">
-            <ApproveLeaveModal leave={leave}>
+            <ApproveLeaveModal leave={leave} open={showModal === 'approve'}>
               <button
                 key={'Approve'}
                 className={`flex-1 px-4 py-2 rounded-md text-center text-slate-100 transition bg-blue-700 hover:bg-blue-800`}
@@ -100,7 +101,7 @@ export default function CardLeaves({ leave, isIntern }: CardProps) {
                 Approve
               </button>
             </ApproveLeaveModal>
-            <RejectLeaveModal leave={leave}>
+            <RejectLeaveModal leave={leave} open={showModal === 'reject'}>
               <button
                 key={'reject'}
                 className="flex-1 px-4 py-2 rounded-md text-center text-slate-100 transition bg-red-600 hover:bg-red-700"

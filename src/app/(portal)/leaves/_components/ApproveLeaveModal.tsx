@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Leave, Staff } from '@prisma/client';
 import { format, isSameDay } from 'date-fns';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 type ApproveLeaveModalProps = {
@@ -22,14 +22,28 @@ type ApproveLeaveModalProps = {
     staff: Staff;
   };
   children: ReactNode;
+  open: boolean;
 };
 
 export const ApproveLeaveModal = ({
   leave,
   children,
+  open,
 }: ApproveLeaveModalProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(open);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsOpen(open)
+  }, [open])
+
+  const [mounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!mounted) return <>{children}</>;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

@@ -7,6 +7,7 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { ApplyLeaveSchema, ApplyLeaveSchemaType } from '@/schema/leaves';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Leave, LeaveStatus, LeaveType, Staff } from '@prisma/client';
+import { isAfter } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useMemo, useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -178,7 +179,8 @@ export const EditOrCancelLeavePage = ({
         Update Leave
       </Button>
       {leave.leaveStatus !== 'REJECTED' &&
-        leave.leaveStatus !== 'CANCELLED' && (
+        leave.leaveStatus !== 'CANCELLED' &&
+        isAfter(leave.startDate, new Date()) && (
           <Button
             type="button"
             variant="secondary"

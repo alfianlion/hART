@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { Staff } from '@prisma/client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React from 'react';
+import { signOut } from 'next-auth/react';
 
 type NavbarProps = {
   user: Staff | null;
@@ -30,15 +30,15 @@ export const Navbar = ({ user }: NavbarProps) => {
             Login
           </Link>
         ) : (
-          <Link
-            href="/logout"
+          <button
             className={cn(
               'text-blue-600 hover:bg-blue-600/20 px-4 p-2 rounded-md transition',
               pathname === '/logout' && 'font-bold text-blue-700'
             )}
+            onClick={() => signOut()}
           >
             Logout
-          </Link>
+          </button>
         )}
       </div>
     </nav>

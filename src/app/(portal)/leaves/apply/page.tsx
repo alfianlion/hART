@@ -1,6 +1,3 @@
-import RemainingLeaves, {
-  getRemainingLeaves,
-} from '@/components/RemainingLeaves';
 import { prisma } from '@/lib/database';
 import ApplyLeaveForm from './ApplyLeaveForm';
 import { StaffType } from '@prisma/client';
@@ -17,24 +14,13 @@ export default async function ApplyLeavePage() {
     },
   });
 
-  const leaves = await prisma.leave.findMany({
-    where: {
-      staffId: currentUser.id,
-      leaveStatus: 'APPROVED',
-    },
-  });
-
-  const remainingLeaves = getRemainingLeaves(currentUser.leaves ?? 0, leaves);
-
   return (
     <div>
-      <RemainingLeaves
-        staffId={currentUser.id}
-        totalLeaves={currentUser.leaves ?? 0}
-      />
       <ApplyLeaveForm
         reportingOfficers={reportingOfficers}
-        remainingLeaves={remainingLeaves}
+        remainingLeaves={
+          currentUser.remainingLeaves ?? currentUser.leaves ?? 12
+        }
       />
     </div>
   );

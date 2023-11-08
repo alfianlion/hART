@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Leave, Staff } from '@prisma/client';
 import { format, isSameDay } from 'date-fns';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
@@ -25,6 +25,7 @@ type RejectLeaveModalProps = {
     staff: Staff;
   };
   children: ReactNode;
+  open: boolean;
 };
 
 const RejectLeaveFormSchema = z.object({
@@ -38,8 +39,9 @@ type RejectLeaveForm = z.infer<typeof RejectLeaveFormSchema>;
 export const RejectLeaveModal = ({
   leave,
   children,
+  open,
 }: RejectLeaveModalProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(open);
   const {
     register,
     handleSubmit,
@@ -48,16 +50,28 @@ export const RejectLeaveModal = ({
     resolver: zodResolver(RejectLeaveFormSchema),
   });
 
+  useEffect(() => {
+    setIsOpen(open);
+  }, [open]);
+
   const onSubmit: SubmitHandler<RejectLeaveForm> = async data => {
     try {
       await rejectLeave(leave.id, data.details);
       setIsOpen(false);
-      toast.success('Approved leave successfully!');
+      toast.success('Rejected leave successfully!');
     } catch (e) {
       if (e instanceof Error) return toast.error(e.message);
       toast.error('Something went wrong please try again later.');
     }
   };
+
+  const [mounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!mounted) return <>{children}</>;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
