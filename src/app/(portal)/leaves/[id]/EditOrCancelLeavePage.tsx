@@ -80,7 +80,6 @@ export const EditOrCancelLeavePage = ({
     APPROVED: 'bg-green-100 border border-green-200 text-green-600',
     REJECTED: 'bg-red-100 border border-red-200 text-red-600',
     PENDING: 'bg-amber-100 border border-amber-200 text-amber-600',
-    CANCELLED: 'bg-gray-100 border border-gray-200 text-gray-600',
   } as {
     [key in LeaveStatus]: string;
   };
@@ -179,7 +178,6 @@ export const EditOrCancelLeavePage = ({
         Update Leave
       </Button>
       {leave.leaveStatus !== 'REJECTED' &&
-        leave.leaveStatus !== 'CANCELLED' &&
         isAfter(leave.startDate, new Date()) && (
           <Button
             type="button"
