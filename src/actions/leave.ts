@@ -3,7 +3,7 @@
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/database';
 import { ApplyLeaveSchema, ApplyLeaveSchemaType } from '@/schema/leaves';
-import { Leave, LeaveCategory, LeaveType } from '@prisma/client';
+import { Leave, LeaveCategory, LeaveType, Staff } from '@prisma/client';
 import { Resend } from 'resend';
 import { format, isSameDay } from 'date-fns';
 import { getRemainingLeaves } from '@/components/RemainingLeaves';
@@ -98,8 +98,7 @@ const sendEmail = async (
   }
 };
 
-const updateRemainingLeaves = async () => {
-  const currentUser = (await getCurrentUser())!;
+const updateRemainingLeaves = async (currentUser: Staff) => {
   const leaves = await prisma.leave.findMany({
     where: {
       leaveStatus: 'APPROVED',
@@ -134,20 +133,17 @@ export const updateLeave = async (id: string, data: ApplyLeaveSchemaType) => {
       roId: updateLeaveData.reportingOfficer,
     },
   });
-  await updateRemainingLeaves();
+  await updateRemainingLeaves((await getCurrentUser())!);
   await sendEmail(result, 'update');
   return result;
 };
 
 export const cancelLeave = async (id: string) => {
   const leave = await getLeave(id);
-  const result = await prisma.leave.update({
+  const result = await prisma.leave.delete({
     where: { id: leave.id },
-    data: {
-      leaveStatus: 'CANCELLED',
-    },
   });
-  await updateRemainingLeaves();
+  await updateRemainingLeaves((await getCurrentUser())!);
   await sendEmail(result, 'cancel');
   return result;
 };
@@ -169,7 +165,10 @@ export const approveLeave = async (id: string) => {
       leaveStatus: 'APPROVED',
     },
   });
-  await updateRemainingLeaves();
+  const user = await prisma.staff.findUniqueOrThrow({
+    where: { id: leave.staffId },
+  });
+  await updateRemainingLeaves(user);
   await sendApproveEmail(result, 'approve');
   revalidatePath('/', 'layout');
   return result;

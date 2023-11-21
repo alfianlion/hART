@@ -33,7 +33,7 @@ export default function ApplyLeaveForm({
     resolver: zodResolver(ApplyLeaveSchema),
     defaultValues: {
       leaveType: LeaveType.FULL,
-    }
+    },
   });
 
   const leaveType = watch('leaveType');
@@ -46,17 +46,12 @@ export default function ApplyLeaveForm({
 
   useEffect(() => {
     if (leaveType === 'FULL') return;
-    console.log('setting');
     setValue('endDate', startDate);
   }, [startDate, leaveType]);
 
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
-
   const onSubmit: SubmitHandler<ApplyLeaveSchemaType> = async data => {
     try {
-      await saveLeave(data);
+      // await saveLeave(data);
       toast.success('Leave applied successfully');
       router.refresh();
       router.push('/leaves');

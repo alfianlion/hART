@@ -8,14 +8,14 @@ type RemainingLeavesProps = {
 };
 
 export const getRemainingLeaves = (total: number, leaves: Leave[]) => {
-  return leaves.reduce((totalLeaves, l) => {
-    return (
-      totalLeaves +
-      (l.leaveType === 'FULL'
-        ? differenceInCalendarDays(l.startDate, l.endDate) - 1
-        : -0.5)
-    );
-  }, total);
+  return (
+    total -
+    leaves.reduce((acc, leave) => {
+      if (leave.leaveType !== 'FULL') return acc + 0.5;
+      const days = differenceInCalendarDays(leave.endDate, leave.startDate) + 1;
+      return acc + days;
+    }, 0)
+  );
 };
 
 export default async function RemainingLeaves({

@@ -20,17 +20,19 @@ export const LoggedInNavbar = async ({ currentUser }: LoggedInNavbarProps) => {
 
   return (
     <nav className="w-full bg-slate-100 sticky top-0 p-6 z-50 border-l border-slate-700/10 border-b flex justify-between">
-      <h1>Hi, <b>{currentUser.name}</b></h1>
-      {currentUser.type === 'INTERN' && remainingLeaves && (
+      <h1>
+        Hi, <b>{currentUser.name}</b>
+      </h1>
+      {currentUser.type === 'INTERN' && remainingLeaves != null ? (
         <p>
           <b>{remainingLeaves}</b> leaves left
         </p>
-      )}
-      {currentUser.type === 'RO' && pendingLeaves && (
+      ) : null}
+      {currentUser.type === 'RO' && pendingLeaves != null ? (
         <p>
           <b>{pendingLeaves}</b> pending leaves
         </p>
-      )}
+      ) : null}
     </nav>
   );
 };

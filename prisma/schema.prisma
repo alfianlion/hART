@@ -39,13 +39,13 @@ enum LeaveStatus {
   APPROVED
   REJECTED
   PENDING
-  CANCELLED
 }
 
 model Leave {
   id               String        @id @default(auto()) @map("_id") @db.ObjectId
   staffId          String        @db.ObjectId
   roId             String        @db.ObjectId
+  createdAt        DateTime      @default(now())
   leaveCategory    LeaveCategory
   leaveType        LeaveType
   startDate        DateTime

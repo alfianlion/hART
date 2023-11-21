@@ -1,5 +1,5 @@
 import { LeaveType } from '@prisma/client';
-import { intervalToDuration } from 'date-fns';
+import { differenceInCalendarDays } from 'date-fns';
 import { z } from 'zod';
 
 export const ApplyLeaveSchema = z
@@ -35,15 +35,10 @@ export const ApplyLeaveSchema = z
   })
   .refine(
     data => {
-      const daysOfLeave = intervalToDuration({
-        start: data.startDate,
-        end: data.endDate,
-      }).days;
-      if (daysOfLeave === undefined) return false;
-      console.log({
-        daysOfLeave,
-        remaining: data.remainingLeaves
-      });
+      const daysOfLeave =
+        data.leaveType === 'FULL'
+          ? differenceInCalendarDays(data.endDate, data.startDate) + 1
+          : 0.5;
       return daysOfLeave <= data.remainingLeaves;
     },
     {

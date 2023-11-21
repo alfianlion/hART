@@ -38,6 +38,9 @@ export default async function LeavesPage({ searchParams }: LeavesPageProps) {
       staff: true,
       ro: true,
     },
+    orderBy: {
+      createdAt: 'desc',
+    }
   });
 
   const data = SearchParamsSchema.safeParse(searchParams);
@@ -50,9 +53,12 @@ export default async function LeavesPage({ searchParams }: LeavesPageProps) {
             key={leave.id}
             leave={leave}
             isIntern={isIntern}
-            showModal={data.success && data.data.id === leave.id
-              ? data.data.mode
-              : undefined} />
+            showModal={
+              data.success && data.data.id === leave.id
+                ? data.data.mode
+                : undefined
+            }
+          />
         ))}
         {appliedLeaves.length === 0 && (
           <div className="text-center text-gray-500">
