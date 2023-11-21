@@ -51,7 +51,7 @@ export default function ApplyLeaveForm({
 
   const onSubmit: SubmitHandler<ApplyLeaveSchemaType> = async data => {
     try {
-      // await saveLeave(data);
+      await saveLeave(data);
       toast.success('Leave applied successfully');
       router.refresh();
       router.push('/leaves');
